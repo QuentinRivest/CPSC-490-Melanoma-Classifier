@@ -3,7 +3,7 @@
 ### Contributors :
 
 - Josh Navarro
-- Quetin Rivest
+- Quentin Rivest
 - Nathan Koh
 - Albert Razo
 - Nelson Vargas
