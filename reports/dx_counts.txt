@@ -1,0 +1,10 @@
+Lesion Type Count Report
+========================
+
+nv    : 6705 images
+mel   : 1113 images
+bkl   : 1099 images
+bcc   :  514 images
+akiec :  327 images
+vasc  :  142 images
+df    :  115 images
