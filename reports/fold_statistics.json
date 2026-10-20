@@ -1,0 +1,155 @@
+{
+    "metadata": {
+        "n_folds": 5,
+        "splitter": "StratifiedGroupKFold",
+        "group_column": "lesion_id",
+        "target_column": "dx"
+    },
+    "folds": {
+        "fold_1": {
+            "train": {
+                "akiec": 223,
+                "bcc": 352,
+                "bkl": 753,
+                "df": 79,
+                "mel": 764,
+                "nv": 4598,
+                "vasc": 97
+            },
+            "val": {
+                "akiec": 38,
+                "bcc": 59,
+                "bkl": 126,
+                "df": 13,
+                "mel": 127,
+                "nv": 766,
+                "vasc": 16
+            },
+            "test": {
+                "akiec": 66,
+                "bcc": 103,
+                "bkl": 220,
+                "df": 23,
+                "mel": 222,
+                "nv": 1341,
+                "vasc": 29
+            }
+        },
+        "fold_2": {
+            "train": {
+                "akiec": 224,
+                "bcc": 353,
+                "bkl": 753,
+                "df": 79,
+                "mel": 763,
+                "nv": 4598,
+                "vasc": 97
+            },
+            "val": {
+                "akiec": 37,
+                "bcc": 58,
+                "bkl": 126,
+                "df": 13,
+                "mel": 128,
+                "nv": 766,
+                "vasc": 17
+            },
+            "test": {
+                "akiec": 66,
+                "bcc": 103,
+                "bkl": 220,
+                "df": 23,
+                "mel": 222,
+                "nv": 1341,
+                "vasc": 28
+            }
+        },
+        "fold_3": {
+            "train": {
+                "akiec": 224,
+                "bcc": 353,
+                "bkl": 753,
+                "df": 79,
+                "mel": 763,
+                "nv": 4598,
+                "vasc": 97
+            },
+            "val": {
+                "akiec": 38,
+                "bcc": 59,
+                "bkl": 126,
+                "df": 13,
+                "mel": 127,
+                "nv": 766,
+                "vasc": 16
+            },
+            "test": {
+                "akiec": 65,
+                "bcc": 102,
+                "bkl": 220,
+                "df": 23,
+                "mel": 223,
+                "nv": 1341,
+                "vasc": 29
+            }
+        },
+        "fold_4": {
+            "train": {
+                "akiec": 224,
+                "bcc": 353,
+                "bkl": 754,
+                "df": 78,
+                "mel": 763,
+                "nv": 4597,
+                "vasc": 98
+            },
+            "val": {
+                "akiec": 38,
+                "bcc": 58,
+                "bkl": 125,
+                "df": 14,
+                "mel": 127,
+                "nv": 767,
+                "vasc": 16
+            },
+            "test": {
+                "akiec": 65,
+                "bcc": 103,
+                "bkl": 220,
+                "df": 23,
+                "mel": 223,
+                "nv": 1341,
+                "vasc": 28
+            }
+        },
+        "fold_5": {
+            "train": {
+                "akiec": 225,
+                "bcc": 352,
+                "bkl": 754,
+                "df": 79,
+                "mel": 763,
+                "nv": 4597,
+                "vasc": 98
+            },
+            "val": {
+                "akiec": 37,
+                "bcc": 59,
+                "bkl": 126,
+                "df": 13,
+                "mel": 127,
+                "nv": 767,
+                "vasc": 16
+            },
+            "test": {
+                "akiec": 65,
+                "bcc": 103,
+                "bkl": 219,
+                "df": 23,
+                "mel": 223,
+                "nv": 1341,
+                "vasc": 28
+            }
+        }
+    }
+}
