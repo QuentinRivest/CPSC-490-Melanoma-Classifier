@@ -25,7 +25,6 @@ train_loader, val_loader, test_loader = create_dataloaders(
     sampler=sampler
 )
 """
-
 import os
 import json
 import cv2
@@ -248,6 +247,9 @@ def preprocess_image(image, config):
 
 # Albumentation Augmentation Pipeline
 def get_transforms(config, training=True):
+    """
+
+    """
 
     size = config["image_size"]
 
@@ -326,7 +328,8 @@ print("Training and evaluation transforms created!")
 # Update HAM10000
 
 class HAM10000Dataset(Dataset):
-
+    """
+    """
     def __init__(self, metadata, img_dirs, config, transform=None):
 
         self.metadata = metadata.reset_index(drop=True).copy()
@@ -420,6 +423,8 @@ def init_folds():
 # Controlled by F-03's configuration
 
 def do_oversampling(train_df):
+    """
+    """
     sampler = None
 
     if CONFIG["oversampling"]:
@@ -454,6 +459,8 @@ def do_oversampling(train_df):
 # Create the Dataloaders
 # Create datasets
 def create_dataloaders(train_df, val_df, test_df, config, sampler = None):
+    """
+    """
     train_dataset = HAM10000Dataset(
         metadata=train_df,
         img_dirs=IMG_DIRS,

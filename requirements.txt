@@ -8,3 +8,13 @@ scikit-learn==1.9.1
 scipy==1.18.1
 six==1.17.0
 threadpoolctl==3.7.0
+
+# For Preprocessing
+torch==2.9.1
+torchvision==0.24.1
+opencv-python==4.11.0.86
+Pillow==11.3.0
+albumentations==2.0.8
+jupyterlab==4.4.10
+notebook==7.4.7
+ipykernel==6.30.1
