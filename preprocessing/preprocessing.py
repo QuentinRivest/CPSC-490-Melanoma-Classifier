@@ -1,29 +1,32 @@
 """
-Feature - 02 
+Feature - 02
 Preprocessing of the HAM10000
 Resizing, Cropping, Flipping, Blur, Hair Removal, and preparation for Model Training
 
-How to use: 
+How to use:
 
 Import the functions/var:
 
 from preprocessing import(
-CONFIG, init_folds, do_oversampling, create_dataloaders
+  set_directories, init_fold, do_oversampling, create_dataloaders
 )
-Load the folds:
 
-train_df, val_df, test_df = init_folds(fold_number=1)
+Run `set_directories(...)` with the desired base directory. MUST run this before
+the rest.
 
-Create the DataLoaders:
-sampler = do_oversampling(train_df, config)
+Then, for EACH fold:
+  Load the folds:
+  train_df, val_df, test_df = init_fold(fold_number)
 
-train_loader, val_loader, test_loader = create_dataloaders(
-    train_df=train_df,
-    val_df=val_df,
-    test_df=test_df,
-    config=config,
-    sampler=sampler
-)
+  Create the DataLoaders:
+  sampler = do_oversampling(train_df)
+
+  train_loader, val_loader, test_loader = create_dataloaders(
+      train_df=train_df,
+      val_df=val_df,
+      test_df=test_df,
+      sampler=sampler
+  )
 """
 # Imports that you will need
 import os
@@ -38,28 +41,32 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from albumentations.pytorch import ToTensorV2
 
+### EDIT: FILE PATHS NOW SET GLOBALLY IN `set_directories()` INSTEAD.
 # File paths, change this according to your directory.
-BASE_DIR = Path("C:/Users/joshu/Desktop/Skin Lesion Project")
-DATA_DIR = BASE_DIR / "data"
-SAVE_DIR = BASE_DIR / "filter_and_normal"
-SAVE_DIR.mkdir(parents=True, exist_ok=True)
+# BASE_DIR = Path("C:/Users/joshu/Desktop/Skin Lesion Project")
+# DATA_DIR = BASE_DIR / "data"
+# SAVE_DIR = BASE_DIR / "filter_and_normal"
+# SAVE_DIR.mkdir(parents=True, exist_ok=True)
+#
+# CSV_FILE = DATA_DIR / "HAM10000_metadata.csv"
+#
+# IMG_DIRS = [
+#     DATA_DIR / "HAM10000_IMG_P1",
+#     DATA_DIR / "HAM10000_IMG_P2"
+# ]
+#
+# FOLDS_DIR = DATA_DIR / "folds"
 
-CSV_FILE = DATA_DIR / "HAM10000_metadata.csv"
 
-IMG_DIRS = [
-    DATA_DIR / "HAM10000_IMG_P1",
-    DATA_DIR / "HAM10000_IMG_P2"
-]
-
-FOLDS_DIR = DATA_DIR / "folds"
-
+### EDIT: `fold_number` IS NOW A PARAMETER IN `init_fold()`.
 # Looking at Fold #1
-FOLD_NUMBER = 1 
+# FOLD_NUMBER = 1
+
 
 # Configurations
 CONFIG = {
     "backbone": "efficientnet_b0", # Change this for EfficientNet_B3
-    "image_size": 224, 
+    "image_size": 224,
     "resize_size": 256,
 
     # Quality checks
@@ -121,18 +128,38 @@ LABEL_MAPPING = {
     "df": 6
 }
 
-# Save the experiment settings
-with open(SAVE_DIR / "preprocessing_config.json", "w") as f:
-    json.dump(CONFIG, f, indent=4)
 
-print("Configuration saved!")
+# -------------------------------------------------------------------
 
+# Set directories based on given base directory. MUST call this first.
+def set_directories(*, base_directory: Path):
+    global BASE_DIR, DATA_DIR, SAVE_DIR, CSV_FILE, IMG_DIRS, FOLDS_DIR
+
+    BASE_DIR = base_directory
+    DATA_DIR = BASE_DIR / "data"
+    SAVE_DIR = BASE_DIR / "filter_and_normal"
+    SAVE_DIR.mkdir(parents=True, exist_ok=True)
+
+    CSV_FILE = DATA_DIR / "raw" / "HAM10000_metadata.csv"
+
+    IMG_DIRS = [
+        DATA_DIR / "raw" / "HAM10000_images_part_1",
+        DATA_DIR / "raw" / "HAM10000_images_part_2"
+    ]
+
+    FOLDS_DIR = DATA_DIR / "folds"
+
+    # Save the experiment settings
+    with open(SAVE_DIR / "preprocessing_config.json", "w") as f:
+        json.dump(CONFIG, f, indent=4)
+
+    print("Configuration saved!")
 
 
 # -------------------------------------------------------------------
 
 # Image Quality Gate Check
-def check_image_quality(image, config):
+def check_image_quality(image):
     """
     Checks whether an image meets the minimum resolution
     and sharpness requirements
@@ -142,19 +169,19 @@ def check_image_quality(image, config):
 
     Args:
         image: RGB image as a NumPy array.
-        config: Preprocessing configuration.
+        CONFIG: Preprocessing configuration.
 
     Returns:
         (accepted, reason, blur_score)
     """
 
-    if not config["quality_gate"]:
+    if not CONFIG["quality_gate"]:
         return True, "Quality gate disabled", None
 
     height, width = image.shape[:2]
 
     # Check original image resolution
-    if min(height, width) < config["min_resolution"]:
+    if min(height, width) < CONFIG["min_resolution"]:
         return False, "Resolution too low", None
 
     # Convert to grayscale for Laplacian variance
@@ -165,7 +192,7 @@ def check_image_quality(image, config):
         gray, cv2.CV_64F
     ).var()
     # Check the if the score is below the threshold
-    if blur_score < config["blur_threshold"]:
+    if blur_score < CONFIG["blur_threshold"]:
         return False, "Image too blurry", float(blur_score)
 
     return True, "Accepted", float(blur_score)
@@ -231,26 +258,26 @@ def crop_vignette(image, fraction=0.90):
     return image[y1:y1 + new_h, x1:x1 + new_w]
 
 
-def preprocess_image(image, config):
+def preprocess_image(image):
     """
     Apply deterministic optional preprocessing.
     Used for training, validation, and inference.
 
-    Calls: 
+    Calls:
     remove_hair()
     crop_vignette()
 
-    input : image, config
+    input : image
     output : image
     """
 
-    if config["hair_removal"]:
+    if CONFIG["hair_removal"]:
         image = remove_hair(image)
 
-    if config["vignette_crop"]:
+    if CONFIG["vignette_crop"]:
         image = crop_vignette(
             image,
-            config["vignette_crop_fraction"]
+            CONFIG["vignette_crop_fraction"]
         )
 
     # Center square crop to preserve aspect ratio
@@ -267,47 +294,47 @@ def preprocess_image(image, config):
 # -------------------------------------------------------------------
 
 # Albumentation Augmentation Pipeline
-def get_transforms(config, training=True):
+def get_transforms(training=True):
     """
     Construct the image transformation pipeline using
     the Albumentations
 
-    input : config, training=True
+    input : training=True
     output : transformed list
     """
 
-    size = config["image_size"]
+    size = CONFIG["image_size"]
 
     if training:
         transform_list = [
             A.HorizontalFlip(
-                p=config["horizontal_flip_p"]
+                p=CONFIG["horizontal_flip_p"]
             ),
 
             A.VerticalFlip(
-                p=config["vertical_flip_p"]
+                p=CONFIG["vertical_flip_p"]
             ),
 
             A.Rotate(
-                limit=config["rotation_limit"],
+                limit=CONFIG["rotation_limit"],
                 border_mode=cv2.BORDER_REFLECT_101,
-                p=config["rotation_p"]
+                p=CONFIG["rotation_p"]
             ),
 
             A.ColorJitter(
-                brightness=config["brightness"],
-                contrast=config["contrast"],
-                saturation=config["saturation"],
-                hue=config["hue"],
-                p=config["color_jitter_p"]
+                brightness=CONFIG["brightness"],
+                contrast=CONFIG["contrast"],
+                saturation=CONFIG["saturation"],
+                hue=CONFIG["hue"],
+                p=CONFIG["color_jitter_p"]
             ),
 
             A.RandomResizedCrop(
                 size=(size, size),
-                scale=tuple(config["zoom_scale"]),
+                scale=tuple(CONFIG["zoom_scale"]),
                 ratio=(1.0, 1.0),
                 interpolation=cv2.INTER_CUBIC,
-                p=config["zoom_p"]
+                p=CONFIG["zoom_p"]
             ),
 
             A.Resize(
@@ -322,8 +349,8 @@ def get_transforms(config, training=True):
         # Applied AFTER the shared square crop.
         transform_list = [
             A.Resize(
-                height=config["resize_size"],
-                width=config["resize_size"],
+                height=CONFIG["resize_size"],
+                width=CONFIG["resize_size"],
                 interpolation=cv2.INTER_CUBIC
             ),
             A.CenterCrop(
@@ -344,8 +371,8 @@ def get_transforms(config, training=True):
 
 
 # Global Variables
-train_transforms = get_transforms(CONFIG, training=True)
-eval_transforms = get_transforms(CONFIG, training=False)
+train_transforms = get_transforms(training=True)
+eval_transforms = get_transforms(training=False)
 
 print("Training and evaluation transforms created!")
 
@@ -366,10 +393,9 @@ class HAM10000Dataset(Dataset):
     input : dataset
     output : none
     """
-    def __init__(self, metadata, img_dirs, config, transform=None):
+    def __init__(self, metadata, img_dirs, transform=None):
 
         self.metadata = metadata.reset_index(drop=True).copy()
-        self.config = config
         self.transform = transform
 
         # Build image ID -> file path dictionary
@@ -401,7 +427,7 @@ class HAM10000Dataset(Dataset):
             image = np.array(img.convert("RGB"))
 
         # Shared deterministic preprocessing
-        image = preprocess_image(image, self.config)
+        image = preprocess_image(image)
 
         # Albumentations transforms
         if self.transform is not None:
@@ -415,7 +441,7 @@ class HAM10000Dataset(Dataset):
 
 # Load the splits generated by Feature 1
 
-def init_folds():
+def init_fold(fold_number: int = 1):
     """
     Load th generate fold and verify that its training, validation
     and testing splits are correctly structured
@@ -425,10 +451,15 @@ def init_folds():
     2. Ensures that they have the requred columns
     3. Checks that no lesion id is shared across the datasets
 
-    input : none
+    input : fold_number
     output : train_df, val_df, and test_df
     """
-    fold_dir = FOLDS_DIR / f"fold_{FOLD_NUMBER}"
+    if not 1 <= fold_number <= 5:
+        raise ValueError(
+            f"fold_number must be an int from 1 to 5, but {fold_number} was passed in"
+        )
+
+    fold_dir = FOLDS_DIR / f"fold_{fold_number}"
 
     train_df = pd.read_csv(fold_dir / "train.csv")
     val_df = pd.read_csv(fold_dir / "val.csv")
@@ -459,7 +490,7 @@ def init_folds():
     assert val_lesions.isdisjoint(test_lesions)
 
     # Display dataset information
-    print(f"Fold {FOLD_NUMBER}")
+    print(f"Fold {fold_number}")
     print("Training:", len(train_df))
     print("Validation:", len(val_df))
     print("Testing:", len(test_df))
@@ -515,57 +546,54 @@ def do_oversampling(train_df):
 # -------------------------------------------------------------------
 # Create the Dataloaders
 # Create datasets
-def create_dataloaders(train_df, val_df, test_df, config, sampler = None):
+def create_dataloaders(train_df, val_df, test_df, sampler = None):
     """
     Convery your training, validation, adn testing into
     the PyTorch DataLoaders
 
-    input : train_df, val_df, test_df, config, sampler
+    input : train_df, val_df, test_df, sampler
     output : none
     """
     train_dataset = HAM10000Dataset(
         metadata=train_df,
         img_dirs=IMG_DIRS,
-        config = config,
         transform=train_transforms
     )
 
     val_dataset = HAM10000Dataset(
         metadata=val_df,
         img_dirs=IMG_DIRS,
-        config = config,
         transform=eval_transforms
     )
 
     test_dataset = HAM10000Dataset(
         metadata=test_df,
         img_dirs=IMG_DIRS,
-        config = config,
         transform=eval_transforms
     )
 
     # Training loader uses weighted sampling
     train_loader = DataLoader(
         train_dataset,
-        batch_size=config["batch_size"],
+        batch_size=CONFIG["batch_size"],
         sampler=sampler,
         shuffle=(sampler is None),
-        num_workers=config["num_workers"]
+        num_workers=CONFIG["num_workers"]
     )
 
     # Evaluation loaders never use oversampling
     val_loader = DataLoader(
         val_dataset,
-        batch_size=config["batch_size"],
+        batch_size=CONFIG["batch_size"],
         shuffle=False,
-        num_workers=config["num_workers"]
+        num_workers=CONFIG["num_workers"]
     )
 
     test_loader = DataLoader(
         test_dataset,
-        batch_size=config["batch_size"],
+        batch_size=CONFIG["batch_size"],
         shuffle=False,
-        num_workers=config["num_workers"]
+        num_workers=CONFIG["num_workers"]
     )
 
     # Verify one batch
@@ -574,15 +602,17 @@ def create_dataloaders(train_df, val_df, test_df, config, sampler = None):
     print("Image batch shape:", images.shape)
     print("Label batch shape:", labels.shape)
 
+    return train_loader, val_loader, test_loader
+
 # -------------------------------------------------------------------
 # Consistent Image through inference
 """
-For future GUI use 
+For future GUI use
 """
 
-def prepare_inference_image(image_path, config):
+def prepare_inference_image(image_path):
     """
-    This function is intended for the inference stage, 
+    This function is intended for the inference stage,
     including potential integration with a graphical user interface.
 
     Steps:
@@ -598,18 +628,16 @@ def prepare_inference_image(image_path, config):
         image = np.array(img.convert("RGB"))
 
     # Check image quality BEFORE resizing
-    accepted, reason, blur_score = check_image_quality(
-        image, config
-    )
+    accepted, reason, blur_score = check_image_quality(image)
 
     if not accepted:
         raise ValueError(f"Image rejected: {reason}")
 
     # Apply the same deterministic preprocessing
-    image = preprocess_image(image, config)
+    image = preprocess_image(image)
 
     # Apply evaluation transforms (no randomness)
-    transform = get_transforms(config, training=False)
+    transform = get_transforms(training=False)
 
     image_tensor = transform(image=image)["image"]
 
