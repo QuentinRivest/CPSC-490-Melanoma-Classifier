@@ -8,6 +8,7 @@ scikit-learn==1.9.1
 scipy==1.18.1
 six==1.17.0
 threadpoolctl==3.7.0
+matplotlib
 
 # For Preprocessing
 # torch==2.9.1
