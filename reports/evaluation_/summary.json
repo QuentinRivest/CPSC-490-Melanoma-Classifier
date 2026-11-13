@@ -1,0 +1,27 @@
+{
+  "source": "REAL",
+  "n_test_images": 10015,
+  "n_test_lesions": 7470,
+  "macro_f1": 0.5472466201124224,
+  "weighted_f1": 0.7798887483964138,
+  "ece_before": 0.014659955573382875,
+  "ece_after": 0.01312110282784414,
+  "ece_target": 0.05,
+  "meets_ece_target": true,
+  "mel_to_nv_rate": 0.42138364779874216,
+  "nv_to_mel_rate": 0.031469052945563014,
+  "high_risk_at_validation_90_specificity": {
+    "recall": 0.6893551688843398,
+    "specificity": 0.8962907827812926,
+    "precision": 0.6170407695831425,
+    "tp": 1347,
+    "fp": 836,
+    "tn": 7225,
+    "fn": 607,
+    "recall_ci_low": 0.6619699649939915,
+    "recall_ci_high": 0.7140746126998931
+  },
+  "descriptive_test_roc_sensitivity_at_min_90_specificity": 0.6857727737973388,
+  "bootstrap_iterations": 2000,
+  "input_sha256": "058484d8f3143c14fddb9afd35f69f22a7a6a2e4bee754c8a6e62ad91174f144"
+}
