@@ -1,0 +1,161 @@
+Classes: ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
+Train counts: {'akiec': 223, 'bcc': 352, 'bkl': 753, 'df': 79, 'mel': 764, 'nv': 4598, 'vasc': 97}
+Epoch 1/20 | lr 1.00e-03 | train loss 0.7778 acc 0.7276 | val loss 0.6207 acc 0.7799 macro-F1 0.5604 macro-recall 0.5298 | 1003s
+  -> saved best checkpoint
+Epoch 2/20 | lr 1.00e-03 | train loss 0.6133 acc 0.7817 | val loss 0.6045 acc 0.7921 macro-F1 0.6201 macro-recall 0.5822 | 88s
+  -> saved best checkpoint
+Epoch 3/20 | lr 1.00e-03 | train loss 0.5473 acc 0.8016 | val loss 0.4917 acc 0.8148 macro-F1 0.6430 macro-recall 0.6286 | 85s
+  -> saved best checkpoint
+Epoch 4/20 | lr 1.00e-03 | train loss 0.5134 acc 0.8114 | val loss 0.5668 acc 0.8052 macro-F1 0.6182 macro-recall 0.6006 | 83s
+Epoch 5/20 | lr 1.00e-03 | train loss 0.4678 acc 0.8302 | val loss 0.5542 acc 0.8052 macro-F1 0.6472 macro-recall 0.6091 | 84s
+  -> saved best checkpoint
+Epoch 6/20 | lr 1.00e-03 | train loss 0.4463 acc 0.8379 | val loss 0.4879 acc 0.8288 macro-F1 0.6854 macro-recall 0.6612 | 83s
+  -> saved best checkpoint
+Epoch 7/20 | lr 1.00e-03 | train loss 0.4313 acc 0.8389 | val loss 0.5486 acc 0.8393 macro-F1 0.6774 macro-recall 0.6993 | 85s
+Epoch 8/20 | lr 1.00e-03 | train loss 0.4157 acc 0.8504 | val loss 0.4816 acc 0.8297 macro-F1 0.6562 macro-recall 0.6403 | 82s
+Epoch 9/20 | lr 1.00e-03 | train loss 0.4120 acc 0.8523 | val loss 0.5254 acc 0.8131 macro-F1 0.6398 macro-recall 0.6033 | 79s
+Epoch 10/20 | lr 5.00e-04 | train loss 0.3199 acc 0.8842 | val loss 0.4287 acc 0.8585 macro-F1 0.7308 macro-recall 0.7029 | 82s
+  -> saved best checkpoint
+Epoch 11/20 | lr 5.00e-04 | train loss 0.2781 acc 0.8954 | val loss 0.4791 acc 0.8498 macro-F1 0.7164 macro-recall 0.7080 | 83s
+Epoch 12/20 | lr 5.00e-04 | train loss 0.2627 acc 0.9069 | val loss 0.4752 acc 0.8524 macro-F1 0.7450 macro-recall 0.7125 | 83s
+  -> saved best checkpoint
+Epoch 13/20 | lr 5.00e-04 | train loss 0.2587 acc 0.9037 | val loss 0.4672 acc 0.8550 macro-F1 0.7046 macro-recall 0.6661 | 86s
+Epoch 14/20 | lr 5.00e-04 | train loss 0.2586 acc 0.9075 | val loss 0.4783 acc 0.8524 macro-F1 0.7619 macro-recall 0.7481 | 83s
+  -> saved best checkpoint
+Epoch 15/20 | lr 5.00e-04 | train loss 0.2460 acc 0.9106 | val loss 0.4815 acc 0.8576 macro-F1 0.7712 macro-recall 0.7442 | 84s
+  -> saved best checkpoint
+Epoch 16/20 | lr 5.00e-04 | train loss 0.2409 acc 0.9152 | val loss 0.4772 acc 0.8323 macro-F1 0.7092 macro-recall 0.7043 | 87s
+Epoch 17/20 | lr 5.00e-04 | train loss 0.2228 acc 0.9179 | val loss 0.4984 acc 0.8576 macro-F1 0.7421 macro-recall 0.7319 | 85s
+Epoch 18/20 | lr 5.00e-04 | train loss 0.2204 acc 0.9200 | val loss 0.4809 acc 0.8629 macro-F1 0.7494 macro-recall 0.7111 | 85s
+Epoch 19/20 | lr 2.50e-04 | train loss 0.1755 acc 0.9387 | val loss 0.4861 acc 0.8620 macro-F1 0.7687 macro-recall 0.7431 | 82s
+Epoch 20/20 | lr 2.50e-04 | train loss 0.1653 acc 0.9385 | val loss 0.4967 acc 0.8620 macro-F1 0.7420 macro-recall 0.7028 | 84s
+
+
+Final test results (best epoch 15, val macro-F1 0.7712)
+Strategy:        plain_ce
+Test loss:       0.4561
+Test accuracy:   0.8603
+Test macro-F1:   0.7293
+Test macro-rec.: 0.7210
+
+
+Per-class results:
+       akiec: precision=0.6818 recall=0.6818 F1=0.6818 support=66
+         bcc: precision=0.8384 recall=0.8058 F1=0.8218 support=103
+         bkl: precision=0.7615 recall=0.7545 F1=0.7580 support=220
+          df: precision=0.6875 recall=0.4783 F1=0.5641 support=23
+         mel: precision=0.6816 recall=0.5495 F1=0.6085 support=222
+          nv: precision=0.9158 recall=0.9493 F1=0.9323 support=1341
+        vasc: precision=0.6667 recall=0.8276 F1=0.7385 support=29
+
+
+
+----
+Classes: ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
+Train counts: {'akiec': 223, 'bcc': 352, 'bkl': 753, 'df': 79, 'mel': 764, 'nv': 4598, 'vasc': 97}
+Class weights: {'akiec': 0.947, 'bcc': 0.5999, 'bkl': 0.2805, 'df': 2.6732, 'mel': 0.2764, 'nv': 0.0459, 'vasc': 2.1771}
+Epoch 1/20 | lr 1.00e-03 | train loss 1.3608 acc 0.5342 | val loss 0.9886 acc 0.6306 macro-F1 0.4802 macro-recall 0.6343 | 91s
+  -> saved best checkpoint
+Epoch 2/20 | lr 1.00e-03 | train loss 1.2219 acc 0.5486 | val loss 1.2830 acc 0.5362 macro-F1 0.4464 macro-recall 0.5578 | 85s
+Epoch 3/20 | lr 1.00e-03 | train loss 1.0623 acc 0.5941 | val loss 0.8628 acc 0.6847 macro-F1 0.5462 macro-recall 0.6832 | 83s
+  -> saved best checkpoint
+Epoch 4/20 | lr 1.00e-03 | train loss 0.9759 acc 0.6177 | val loss 0.8745 acc 0.6620 macro-F1 0.5663 macro-recall 0.6898 | 87s
+  -> saved best checkpoint
+Epoch 5/20 | lr 1.00e-03 | train loss 0.9358 acc 0.6260 | val loss 0.9107 acc 0.6463 macro-F1 0.5488 macro-recall 0.6528 | 87s
+Epoch 6/20 | lr 1.00e-03 | train loss 0.8745 acc 0.6621 | val loss 0.7412 acc 0.7109 macro-F1 0.5838 macro-recall 0.7116 | 86s
+  -> saved best checkpoint
+Epoch 7/20 | lr 1.00e-03 | train loss 0.9226 acc 0.6560 | val loss 0.8247 acc 0.6943 macro-F1 0.6017 macro-recall 0.7675 | 86s
+  -> saved best checkpoint
+Epoch 8/20 | lr 1.00e-03 | train loss 0.7678 acc 0.6866 | val loss 0.8772 acc 0.6725 macro-F1 0.5365 macro-recall 0.7094 | 86s
+Epoch 9/20 | lr 1.00e-03 | train loss 0.7547 acc 0.6883 | val loss 0.6728 acc 0.7528 macro-F1 0.6013 macro-recall 0.7052 | 86s
+Epoch 10/20 | lr 1.00e-03 | train loss 0.7334 acc 0.7064 | val loss 0.6272 acc 0.7520 macro-F1 0.6217 macro-recall 0.7355 | 85s
+  -> saved best checkpoint
+Epoch 11/20 | lr 1.00e-03 | train loss 0.7706 acc 0.6826 | val loss 0.6696 acc 0.7493 macro-F1 0.6369 macro-recall 0.7340 | 85s
+  -> saved best checkpoint
+Epoch 12/20 | lr 1.00e-03 | train loss 0.6913 acc 0.7174 | val loss 0.6921 acc 0.7406 macro-F1 0.6743 macro-recall 0.7268 | 87s
+  -> saved best checkpoint
+Epoch 13/20 | lr 1.00e-03 | train loss 0.7372 acc 0.6920 | val loss 0.8648 acc 0.6865 macro-F1 0.5888 macro-recall 0.7189 | 91s
+Epoch 14/20 | lr 1.00e-03 | train loss 0.6824 acc 0.7022 | val loss 0.6689 acc 0.7624 macro-F1 0.6411 macro-recall 0.7357 | 91s
+Epoch 15/20 | lr 1.00e-03 | train loss 0.6427 acc 0.7195 | val loss 0.7112 acc 0.7389 macro-F1 0.6282 macro-recall 0.7293 | 91s
+Epoch 16/20 | lr 5.00e-04 | train loss 0.5201 acc 0.7470 | val loss 0.5624 acc 0.7939 macro-F1 0.7183 macro-recall 0.7673 | 90s
+  -> saved best checkpoint
+Epoch 17/20 | lr 5.00e-04 | train loss 0.4975 acc 0.7606 | val loss 0.6845 acc 0.7572 macro-F1 0.6633 macro-recall 0.7473 | 92s
+Epoch 18/20 | lr 5.00e-04 | train loss 0.4851 acc 0.7760 | val loss 0.6260 acc 0.7825 macro-F1 0.6984 macro-recall 0.7895 | 89s
+Epoch 19/20 | lr 5.00e-04 | train loss 0.4448 acc 0.7874 | val loss 0.6578 acc 0.7773 macro-F1 0.7099 macro-recall 0.7714 | 88s
+Epoch 20/20 | lr 2.50e-04 | train loss 0.4023 acc 0.7869 | val loss 0.6043 acc 0.7948 macro-F1 0.7002 macro-recall 0.7916 | 87s
+
+
+
+Final test results (best epoch 16, val macro-F1 0.7183)
+Strategy:        weighted_ce
+Test loss:       0.5866
+Test accuracy:   0.7774
+Test macro-F1:   0.6740
+Test macro-rec.: 0.7443
+
+
+
+Per-class results:
+       akiec: precision=0.5208 recall=0.7576 F1=0.6173 support=66
+         bcc: precision=0.6800 recall=0.8252 F1=0.7456 support=103
+         bkl: precision=0.6502 recall=0.6591 F1=0.6546 support=220
+          df: precision=0.4483 recall=0.5652 F1=0.5000 support=23
+         mel: precision=0.4391 recall=0.6982 F1=0.5391 support=222
+          nv: precision=0.9500 recall=0.8084 F1=0.8735 support=1341
+        vasc: precision=0.7027 recall=0.8966 F1=0.7879 support=29
+
+----
+Classes: ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
+Train counts: {'akiec': 223, 'bcc': 352, 'bkl': 753, 'df': 79, 'mel': 764, 'nv': 4598, 'vasc': 97}
+Class weights: {'akiec': 0.947, 'bcc': 0.5999, 'bkl': 0.2805, 'df': 2.6732, 'mel': 0.2764, 'nv': 0.0459, 'vasc': 2.1771}
+Expected draw probability: {'akiec': 0.1429, 'bcc': 0.1429, 'bkl': 0.1429, 'df': 0.1429, 'mel': 0.1429, 'nv': 0.1429, 'vasc': 0.1429}
+Epoch 1/20 | lr 1.00e-03 | train loss 0.5825 acc 0.5686 | val loss 1.8486 acc 0.3930 macro-F1 0.3993 macro-recall 0.6512 | 95s
+  -> saved best checkpoint
+Epoch 2/20 | lr 1.00e-03 | train loss 0.3818 acc 0.6735 | val loss 1.7564 acc 0.4664 macro-F1 0.4445 macro-recall 0.6734 | 87s
+  -> saved best checkpoint
+Epoch 3/20 | lr 1.00e-03 | train loss 0.3163 acc 0.7138 | val loss 1.6998 acc 0.4157 macro-F1 0.3982 macro-recall 0.6500 | 86s
+Epoch 4/20 | lr 1.00e-03 | train loss 0.2730 acc 0.7332 | val loss 1.8602 acc 0.4131 macro-F1 0.4132 macro-recall 0.6111 | 87s
+Epoch 5/20 | lr 1.00e-03 | train loss 0.2883 acc 0.7441 | val loss 1.5600 acc 0.5092 macro-F1 0.4251 macro-recall 0.6752 | 87s
+Epoch 6/20 | lr 5.00e-04 | train loss 0.1930 acc 0.7804 | val loss 1.4807 acc 0.5328 macro-F1 0.5309 macro-recall 0.7150 | 86s
+  -> saved best checkpoint
+Epoch 7/20 | lr 5.00e-04 | train loss 0.1620 acc 0.8008 | val loss 1.0534 acc 0.6367 macro-F1 0.5939 macro-recall 0.7483 | 86s
+  -> saved best checkpoint
+Epoch 8/20 | lr 5.00e-04 | train loss 0.1595 acc 0.8136 | val loss 1.0472 acc 0.6410 macro-F1 0.5730 macro-recall 0.7260 | 86s
+Epoch 9/20 | lr 5.00e-04 | train loss 0.1468 acc 0.8294 | val loss 1.1008 acc 0.6044 macro-F1 0.5548 macro-recall 0.7222 | 85s
+Epoch 10/20 | lr 5.00e-04 | train loss 0.1334 acc 0.8340 | val loss 1.1961 acc 0.6157 macro-F1 0.5911 macro-recall 0.7247 | 84s
+Epoch 11/20 | lr 2.50e-04 | train loss 0.1108 acc 0.8506 | val loss 1.0578 acc 0.6332 macro-F1 0.6013 macro-recall 0.7124 | 85s
+  -> saved best checkpoint
+Epoch 12/20 | lr 2.50e-04 | train loss 0.1161 acc 0.8513 | val loss 1.0453 acc 0.6550 macro-F1 0.6286 macro-recall 0.7407 | 89s
+  -> saved best checkpoint
+Epoch 13/20 | lr 2.50e-04 | train loss 0.0962 acc 0.8664 | val loss 0.9886 acc 0.6603 macro-F1 0.6336 macro-recall 0.7698 | 87s
+  -> saved best checkpoint
+Epoch 14/20 | lr 2.50e-04 | train loss 0.0993 acc 0.8631 | val loss 0.9845 acc 0.6838 macro-F1 0.6276 macro-recall 0.7312 | 89s
+Epoch 15/20 | lr 2.50e-04 | train loss 0.0897 acc 0.8720 | val loss 1.0608 acc 0.6690 macro-F1 0.6377 macro-recall 0.7393 | 91s
+  -> saved best checkpoint
+Epoch 16/20 | lr 2.50e-04 | train loss 0.0871 acc 0.8806 | val loss 0.9379 acc 0.6952 macro-F1 0.6523 macro-recall 0.7646 | 89s
+  -> saved best checkpoint
+Epoch 17/20 | lr 2.50e-04 | train loss 0.0953 acc 0.8755 | val loss 0.8532 acc 0.7197 macro-F1 0.6640 macro-recall 0.7509 | 91s
+  -> saved best checkpoint
+Epoch 18/20 | lr 2.50e-04 | train loss 0.0784 acc 0.8861 | val loss 0.9057 acc 0.7214 macro-F1 0.6318 macro-recall 0.7508 | 89s
+Epoch 19/20 | lr 2.50e-04 | train loss 0.0774 acc 0.8876 | val loss 1.2369 acc 0.6271 macro-F1 0.5969 macro-recall 0.7417 | 89s
+Epoch 20/20 | lr 2.50e-04 | train loss 0.0759 acc 0.8839 | val loss 1.0218 acc 0.6838 macro-F1 0.6448 macro-recall 0.7313 | 87s
+
+
+
+Final test results (best epoch 17, val macro-F1 0.6640)
+Strategy:        weighted_ce_oversampling
+Test loss:       0.9193
+Test accuracy:   0.7021
+Test macro-F1:   0.6203
+Test macro-rec.: 0.7173
+
+
+
+Per-class results:
+       akiec: precision=0.4757 recall=0.7424 F1=0.5799 support=66
+         bcc: precision=0.5353 recall=0.8835 F1=0.6667 support=103
+         bkl: precision=0.5196 recall=0.7818 F1=0.6243 support=220
+          df: precision=0.6250 recall=0.4348 F1=0.5128 support=23
+         mel: precision=0.3608 recall=0.6712 F1=0.4693 support=222
+          nv: precision=0.9806 recall=0.6801 F1=0.8032 support=1341
+        vasc: precision=0.5854 recall=0.8276 F1=0.6857 support=29

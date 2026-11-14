@@ -1,0 +1,156 @@
+{
+  "run_name": "weighted_ce_oversampling_20261114_034248",
+  "started_at": "2026-11-14T03:42:55",
+  "strategy": "weighted_ce_oversampling",
+  "loss": {
+    "type": "CrossEntropyLoss",
+    "class_weighted": true,
+    "weight_formula": "(N / (K * n_class)) ** 1.0, normalised to mean 1",
+    "class_weights": {
+      "akiec": 0.9469941004849225,
+      "bcc": 0.5999422852503914,
+      "bkl": 0.28045110811173674,
+      "df": 2.673160562128326,
+      "mel": 0.2764131994870913,
+      "nv": 0.04592859600002996,
+      "vasc": 2.1771101485375026
+    },
+    "label_smoothing": 0.0
+  },
+  "training_set_selection": {
+    "train_csv": "/content/train.csv",
+    "num_train_images": 6866,
+    "class_counts": {
+      "akiec": 223,
+      "bcc": 352,
+      "bkl": 753,
+      "df": 79,
+      "mel": 764,
+      "nv": 4598,
+      "vasc": 97
+    },
+    "sampling": {
+      "type": "WeightedRandomSampler",
+      "sample_weight_formula": "(1 / n_class) ** 1.0",
+      "num_samples_per_epoch": 6866,
+      "replacement": true,
+      "per_class_sample_weight": {
+        "akiec": 0.004484304932735426,
+        "bcc": 0.002840909090909091,
+        "bkl": 0.0013280212483399733,
+        "df": 0.012658227848101266,
+        "mel": 0.0013089005235602095,
+        "nv": 0.00021748586341887777,
+        "vasc": 0.010309278350515464
+      },
+      "expected_draw_probability": {
+        "akiec": 0.14285714285714285,
+        "bcc": 0.14285714285714285,
+        "bkl": 0.14285714285714285,
+        "df": 0.14285714285714285,
+        "mel": 0.14285714285714285,
+        "nv": 0.14285714285714285,
+        "vasc": 0.14285714285714285
+      },
+      "expected_draws_per_epoch": {
+        "akiec": 980.8571428571428,
+        "bcc": 980.8571428571428,
+        "bkl": 980.8571428571428,
+        "df": 980.8571428571428,
+        "mel": 980.8571428571428,
+        "nv": 980.8571428571428,
+        "vasc": 980.8571428571428
+      }
+    }
+  },
+  "splits": {
+    "val_csv": "/content/val.csv",
+    "test_csv": "/content/test.csv",
+    "sizes": {
+      "train": 6866,
+      "val": 1145,
+      "test": 2004
+    },
+    "class_distribution": {
+      "train": {
+        "akiec": 223,
+        "bcc": 352,
+        "bkl": 753,
+        "df": 79,
+        "mel": 764,
+        "nv": 4598,
+        "vasc": 97
+      },
+      "val": {
+        "akiec": 38,
+        "bcc": 59,
+        "bkl": 126,
+        "df": 13,
+        "mel": 127,
+        "nv": 766,
+        "vasc": 16
+      },
+      "test": {
+        "akiec": 66,
+        "bcc": 103,
+        "bkl": 220,
+        "df": 23,
+        "mel": 222,
+        "nv": 1341,
+        "vasc": 29
+      }
+    },
+    "lesion_id_overlap": {
+      "train_val": 0,
+      "train_test": 0,
+      "val_test": 0
+    }
+  },
+  "class_to_idx": {
+    "akiec": 0,
+    "bcc": 1,
+    "bkl": 2,
+    "df": 3,
+    "mel": 4,
+    "nv": 5,
+    "vasc": 6
+  },
+  "model": "efficientnet_b0",
+  "pretrained": true,
+  "device": "cuda",
+  "amp": true,
+  "torch_version": "2.14.1+cu130",
+  "command": "loss_tests.py --train-csv /content/train.csv --val-csv /content/val.csv --test-csv /content/test.csv --image-root /content/drive/MyDrive/MelanomaClassfierProject/data/raw/HAM10000_images_part_1 /content/drive/MyDrive/MelanomaClassfierProject/data/raw/HAM10000_images_part_2/ --strategy weighted_ce_oversampling --epochs 20 --num-workers 2 --amp --seed 42 --output-dir /content/drive/MyDrive/runs",
+  "args": {
+    "train_csv": "/content/train.csv",
+    "val_csv": "/content/val.csv",
+    "test_csv": "/content/test.csv",
+    "image_root": [
+      "/content/drive/MyDrive/MelanomaClassfierProject/data/raw/HAM10000_images_part_1",
+      "/content/drive/MyDrive/MelanomaClassfierProject/data/raw/HAM10000_images_part_2/"
+    ],
+    "label_col": "dx",
+    "path_col": "image_path",
+    "img_size": 224,
+    "strategy": "weighted_ce_oversampling",
+    "weight_power": 1.0,
+    "sampler_power": 1.0,
+    "samples_per_epoch": 0,
+    "no_replacement": false,
+    "label_smoothing": 0.0,
+    "epochs": 20,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "lr_patience": 2,
+    "lr_factor": 0.5,
+    "early_stop": 0,
+    "num_workers": 2,
+    "no_pretrained": false,
+    "amp": true,
+    "seed": 42,
+    "device": "auto",
+    "output_dir": "/content/drive/MyDrive/runs",
+    "run_name": ""
+  }
+}
