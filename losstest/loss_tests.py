@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Compare class-imbalance strategies for EfficientNet-B0 on CSV image splits
+Compare class-imbalance strategies for EfficientNet-B0 on CSV-defined image splits.
 
-Strategies Tested
+Strategies
 ----------
   plain_ce                  Standard cross-entropy (baseline), uniform shuffling.
   weighted_ce               Cross-entropy with inverse-frequency class weights.
@@ -15,6 +15,8 @@ CSV format (train / val / test)
 
   `dx` is the label column and `image_path` the image file (absolute, or relative
   to --image-root). Both column names can be changed with --label-col / --path-col.
+  --image-root accepts several folders, e.g. HAM10000_images_part_1 and _part_2;
+  images are looked up by path, then by file name, then by image_id.
 
 Example
 -------
@@ -58,9 +60,7 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 
-# ---------------------------------------------------------------------------
-# Command-line arguments
-#
+# Command-line arguments ------------------------------------------------------
 
 
 def parse_args(argv=None):
@@ -75,8 +75,10 @@ def parse_args(argv=None):
     data.add_argument("--test-csv", required=True, help="Test split CSV.")
     data.add_argument(
         "--image-root",
-        default="",
-        help="Prefix for relative paths in the image_path column.",
+        nargs="+",
+        default=[],
+        help="One or more image folders (searched recursively). Images are "
+        "matched by the image_path value, its file name, or image_id.",
     )
     data.add_argument("--label-col", default="dx", help="Label column name.")
     data.add_argument(
@@ -180,9 +182,7 @@ def parse_args(argv=None):
     return args
 
 
-# ---------------------------------------------------------------------------
-# Utilities
-#
+# Utilities ----------------------------------------------------------------
 
 
 def set_seed(seed):
@@ -200,6 +200,60 @@ def resolve_device(name):
     if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
         return torch.device("mps")
     return torch.device("cpu")
+
+
+IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
+_INDEX_CACHE = {}
+
+
+def build_image_index(roots):
+    """Map file name -> full path for every image under the given folders (recursive).
+
+    Lets images be spread over several folders (e.g. HAM10000_images_part_1 and
+    HAM10000_images_part_2) and still be found by file name alone.
+    """
+    key = tuple(roots)
+    if key in _INDEX_CACHE:
+        return _INDEX_CACHE[key]
+
+    index, duplicates = {}, 0
+    for root in roots:
+        if not os.path.isdir(root):
+            sys.exit(f"[error] --image-root folder not found: {root}")
+        n_before = len(index)
+        for dirpath, _, files in os.walk(root):
+            for name in files:
+                if name.lower().endswith(IMAGE_EXTS):
+                    if name in index:
+                        duplicates += 1
+                    else:
+                        index[name] = os.path.join(dirpath, name)
+        print(f"Indexed {len(index) - n_before} images in {root}")
+    if duplicates:
+        print(
+            f"[warn] {duplicates} file names appear in more than one image folder; "
+            "using the first match."
+        )
+    _INDEX_CACHE[key] = index
+    return index
+
+
+def resolve_image_path(raw, image_id, roots, index):
+    """Find an image: as given, relative to each root, then by file name or image_id."""
+    if os.path.isfile(raw):
+        return raw
+    for root in roots:
+        candidate = os.path.join(root, raw)
+        if os.path.isfile(candidate):
+            return candidate
+    name = os.path.basename(raw.replace("\\", "/"))  # also handles Windows paths
+    if name in index:
+        return index[name]
+    if image_id:
+        for ext in IMAGE_EXTS:
+            if image_id + ext in index:
+                return index[image_id + ext]
+    return None
 
 
 def load_split(csv_path, args, split):
@@ -224,25 +278,33 @@ def load_split(csv_path, args, split):
         )
 
     df[args.label_col] = df[args.label_col].astype(str).str.strip()
-    df["_full_path"] = [
-        p
-        if os.path.isabs(p) or not args.image_root
-        else os.path.join(args.image_root, p)
-        for p in df[args.path_col].astype(str).str.strip()
+    raw_paths = df[args.path_col].astype(str).str.strip().tolist()
+    image_ids = (
+        df["image_id"].astype(str).str.strip().tolist()
+        if "image_id" in df.columns
+        else [None] * len(df)
+    )
+    index = build_image_index(args.image_root)
+    resolved = [
+        resolve_image_path(p, iid, args.image_root, index)
+        for p, iid in zip(raw_paths, image_ids)
     ]
 
-    missing = [p for p in df["_full_path"] if not os.path.isfile(p)]
+    missing = [raw for raw, full in zip(raw_paths, resolved) if full is None]
     if missing:
         sys.exit(
-            f"[error] {split}: {len(missing)} image files not found, "
+            f"[error] {split}: {len(missing)} image files not found in "
+            f"{args.image_root or 'the paths given in the CSV'}, "
             f"e.g. {missing[:3]}. Check --image-root / --path-col."
         )
+    df["_full_path"] = resolved
     if len(df) == 0:
         sys.exit(f"[error] {split} split is empty.")
     return df
 
 
 def check_lesion_leakage(splits):
+    """HAM10000-style data has several images per lesion; warn if a lesion spans splits."""
     if not all("lesion_id" in df.columns for df in splits.values()):
         return {}
     ids = {k: set(df["lesion_id"].dropna().astype(str)) for k, df in splits.items()}
@@ -276,9 +338,7 @@ class CSVImageDataset(Dataset):
         return self.transform(img), self.labels[i], i
 
 
-# ---------------------------------------------------------------------------
-# Training and evaluation
-#
+# Training and evaluation ---------------------------------------------------
 
 
 def train_one_epoch(
@@ -351,9 +411,7 @@ def evaluate(model, loader, criterion, device, class_names, amp):
     }
 
 
-# ---------------------------------------------------------------------------
-# Main
-#
+# Main ----------------------------------------------------------------------
 
 
 def main(argv=None):
@@ -369,7 +427,7 @@ def main(argv=None):
 
     print(f"Device: {device} | Strategy: {args.strategy} | Run dir: {run_dir}")
 
-    # load data splits
+    # ---- Data -------------------------------------------------------------
     splits = {
         "train": load_split(args.train_csv, args, "train"),
         "val": load_split(args.val_csv, args, "val"),
@@ -377,7 +435,7 @@ def main(argv=None):
     }
     leakage = check_lesion_leakage(splits)
 
-    # class index mapping comes from the training split
+    # Class index mapping comes from the training split (sorted, like ImageFolder).
     class_names = sorted(splits["train"][args.label_col].unique())
     class_to_idx = {c: i for i, c in enumerate(class_names)}
     num_classes = len(class_names)
@@ -392,7 +450,7 @@ def main(argv=None):
         [
             transforms.RandomResizedCrop(args.img_size),
             transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),  # lesion images have no specific orientation
+            transforms.RandomVerticalFlip(),  # lesion images have no canonical orientation
             transforms.ToTensor(),
             transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
         ]
@@ -410,7 +468,7 @@ def main(argv=None):
     val_ds = CSVImageDataset(splits["val"], args.label_col, class_to_idx, eval_tf)
     test_ds = CSVImageDataset(splits["test"], args.label_col, class_to_idx, eval_tf)
 
-    # ---- Class statistics and weights ------------------------------------
+    # Class statistics and weights ------------------------------------
     counts_map = Counter(train_ds.labels)
     counts = torch.tensor(
         [counts_map[i] for i in range(num_classes)], dtype=torch.float64
@@ -493,7 +551,7 @@ def main(argv=None):
         label_smoothing=args.label_smoothing,
     )
 
-    # record the run configuration
+    # Record the run configuration -----------------------------------
     def dist(df):
         return (
             df[args.label_col]
@@ -568,7 +626,7 @@ def main(argv=None):
             },
         )
 
-    # Model Loading -----------------------------------------------------------
+    # Model ------------------------------------------------------------
     weights = None if args.no_pretrained else EfficientNet_B0_Weights.DEFAULT
     model = models.efficientnet_b0(weights=weights)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
@@ -582,7 +640,7 @@ def main(argv=None):
     )
     scaler = torch.amp.GradScaler("cuda", enabled=amp)
 
-    # Training loop -----------------------------------------------------------
+    # Training loop ------------------------------------------------------
     ckpt_path = os.path.join(run_dir, "best_model.pth")
     history_path = os.path.join(run_dir, "history.csv")
     best_f1, best_epoch, stale = -1.0, 0, 0
@@ -666,7 +724,7 @@ def main(argv=None):
                     print(f"Early stopping: no val macro-F1 gain for {stale} epochs.")
                     break
 
-    # Final test results/report -----------------------------------------------
+    # Final test evaluation -------------------------------------------------
     checkpoint = torch.load(ckpt_path, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint["model_state_dict"])
     test = evaluate(model, test_loader, criterion, device, class_names, amp)
